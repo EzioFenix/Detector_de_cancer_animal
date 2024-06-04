@@ -114,6 +114,38 @@ Se encuentra en la página  2 del documento.
 
 Teniendo una imagen como entrada se tiene que hacer una clasificación manual de las células en la imagenes para poder realizar el detector.
 
+# Aumento artificial del dataset 
+
+Después de haber entrenado el modelo con +800 imágenes durante 10 épocas, no resulto que el modelo detectará alguna imagen fuera de las que tenía como entrenamiento, entonces se recurrió a investigar cuales eran las posibles causas determinando que tanto la falta de imágenes, el sobre ajuste y la falta de un dataset más grande es la causa más probable de este resultado.
+
+Resultado de la investigación se llego a la tabla de configuración de Yolo v8 que es la siguiente:
+
+| Argumento     | Tipo  | Predeterminado | Rango       | Descripción                                                  |
+| ------------- | ----- | -------------- | ----------- | ------------------------------------------------------------ |
+| hsv_h         | float | 0.015          | 0.0 - 1.0   | Ajusta el tono de la imagen por una fracción del círculo cromático, introduciendo variabilidad de color. Ayuda al modelo a generalizar en diferentes condiciones de iluminación. |
+| hsv_s         | float | 0.7            | 0.0 - 1.0   | Altera la saturación de la imagen por una fracción, afectando la intensidad de los colores. Útil para simular diferentes condiciones ambientales. |
+| hsv_v         | float | 0.4            | 0.0 - 1.0   | Modifica el valor (brillo) de la imagen por una fracción, ayudando al modelo a desempeñarse bien en diversas condiciones de iluminación. |
+| degrees       | float | 0.0            | -180 - +180 | Rota la imagen aleatoriamente dentro del rango especificado de grados, mejorando la capacidad del modelo para reconocer objetos en varias orientaciones. |
+| translate     | float | 0.1            | 0.0 - 1.0   | Traduce la imagen horizontal y verticalmente por una fracción del tamaño de la imagen, ayudando a aprender a detectar objetos parcialmente visibles. |
+| scale         | float | 0.5            | >=0.0       | Escala la imagen por un factor de ganancia, simulando objetos a diferentes distancias de la cámara. |
+| shear         | float | 0.0            | -180 - +180 | Cizalla la imagen por un grado especificado, imitando el efecto de objetos vistos desde diferentes ángulos. |
+| perspective   | float | 0.0            | 0.0 - 0.001 | Aplica una transformación de perspectiva aleatoria a la imagen, mejorando la capacidad del modelo para entender objetos en el espacio 3D. |
+| flipud        | float | 0.0            | 0.0 - 1.0   | Voltea la imagen de arriba abajo con la probabilidad especificada, aumentando la variabilidad de los datos sin afectar las características del objeto. |
+| fliplr        | float | 0.5            | 0.0 - 1.0   | Voltea la imagen de izquierda a derecha con la probabilidad especificada, útil para aprender objetos simétricos y aumentar la diversidad del conjunto de datos. |
+| bgr           | float | 0.0            | 0.0 - 1.0   | Invierte los canales de la imagen de RGB a BGR con la probabilidad especificada, útil para aumentar la robustez ante un orden incorrecto de los canales. |
+| mosaic        | float | 1.0            | 0.0 - 1.0   | Combina cuatro imágenes de entrenamiento en una, simulando diferentes composiciones de escenas e interacciones de objetos. Altamente efectivo para la comprensión de escenas complejas. |
+| mixup         | float | 0.0            | 0.0 - 1.0   | Mezcla dos imágenes y sus etiquetas, creando una imagen compuesta. Mejora la capacidad del modelo para generalizar al introducir ruido en las etiquetas y variabilidad visual. |
+| copy_paste    | float | 0.0            | 0.0 - 1.0   | Copia objetos de una imagen y los pega en otra, útil para aumentar las instancias de objetos y aprender la oclusión de objetos. |
+| auto_augment  | str   | randaugment    | -           | Aplica automáticamente una política de aumento predefinida (randaugment, autoaugment, augmix), optimizando para tareas de clasificación al diversificar las características visuales. |
+| erasing       | float | 0.4            | 0.0 - 0.9   | Borra aleatoriamente una porción de la imagen durante el entrenamiento de clasificación, animando al modelo a centrarse en características menos obvias para el reconocimiento. |
+| crop_fraction | float | 1.0            | 0.1 - 1.0   | Recorta la imagen de clasificación a una fracción de su tamaño para enfatizar las características centrales y adaptarse a las escalas de los objetos, reduciendo las distracciones del fondo. |
+
+La información obtenida se encuentra en:
+
+https://docs.ultralytics.com/usage/cfg/#augmentation-settings
+
+Derivado de ello se busco configuraciones que tuvieran configuraciones que fuerán apropiadas y respaldas por la comunidad y en un foro de discusión de github del mismo respositorio encontré dicha configuración que tiene que ir en 
+
 # Código
 
 ## Paso 2
